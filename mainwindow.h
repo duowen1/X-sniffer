@@ -5,13 +5,9 @@
 #include <QString>
 #include <intercept.h>
 #include <analysis.h>
+#include <openfile.h>
 #include <QVariant>
 
-#define RESERVED 0
-#define ICMP 1
-#define IGMP 2
-#define TCP 6
-#define UDP 17
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -53,6 +49,11 @@ private slots:
 
     void on_filter_button_clicked();
 
+    void on_action_open_triggered();
+    void OpenUI(QString,QString,QString,QString,QString,QString);
+
+    void on_start_button_clicked();
+
 signals:
     void stopanalysis();
     void stopintercept();
@@ -61,6 +62,7 @@ private:
     Ui::MainWindow *ui;
     Intercept * inter;
     Analysis * anal;
+    Openfile * open;
     int row;
     int tcps;
     int udps;
@@ -68,6 +70,7 @@ private:
     int arps;
     int icmps;
     int igmps;
+    QString filepath;
 
 };
 #endif // MAINWINDOW_H

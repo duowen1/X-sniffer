@@ -1,30 +1,33 @@
-#include <analysis.h>
+#include <openfile.h>
+#include <QTableWidgetItem>
 #include <QDateTime>
-#define HAVE_REMOTE
-#include <pcap.h>
 
-Analysis :: Analysis(QObject *parent):QThread(parent){
+Openfile :: Openfile(QObject *parent, QString str):QThread(parent){
+    filepath=str;
 }
 
-void Analysis :: run(){
-    sleep(2);
+void Openfile :: run(){
     pcap_t *fp;
     char errbuf[PCAP_ERRBUF_SIZE];
     char source[PCAP_BUF_SIZE];
     struct pcap_pkthdr *header;
     const u_char *pkt_data;
-    if(pcap_createsrcstr(source,PCAP_SRC_FILE,nullptr,nullptr,"file.txt",errbuf)!=0){
+
+    char*  ch;
+    QByteArray ba = filepath.toLatin1(); // must
+    ch=ba.data();
+
+    if(pcap_createsrcstr(source,PCAP_SRC_FILE,nullptr,nullptr,ch,errbuf)!=0){
         qDebug("Error creating a source string\n");
     }
 
     if((fp=pcap_open(source,65536,PCAP_OPENFLAG_PROMISCUOUS,1000,nullptr,errbuf))==NULL){
         qDebug("Unabe to open the file\n");
     }
-    flag=true;
+    qDebug("open线程运行成功");
+
     int packet_number=1;
-    while(flag){//应当通过信号和槽将信息传递到主线程
-        sleep(0.2);
-        while(pcap_next_ex(fp,&header,&pkt_data)<0);
+    while(pcap_next_ex(fp,&header,&pkt_data)>=0){//应当通过信号和槽将信息传递到主线程
         QString Protool;
         QString sourceipstr,desipstr;
         QDateTime time_1= QDateTime::fromTime_t(header->ts.tv_sec);//时间戳转换成QDateTime对象
@@ -62,10 +65,5 @@ void Analysis :: run(){
             Protool="Unrecognize";
         }
         emit PacketRead(QString("%1").arg(packet_number++),time_1.toString("yyyy-MM-dd hh:mm:ss"),QString::number(header->len),sourceipstr,desipstr, Protool);
-
     }
-}
-
-void Analysis :: terminatethread(){
-    flag=false;
 }

@@ -22,7 +22,8 @@ SOURCES += \
     dialog_2.cpp \
     intercept.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    openfile.cpp
 
 HEADERS += \
     analysis.h \
@@ -30,7 +31,8 @@ HEADERS += \
     dialog_2.h \
     gloable.h \
     intercept.h \
-    mainwindow.h
+    mainwindow.h \
+    openfile.h
 
 FORMS += \
     dialog.ui \
